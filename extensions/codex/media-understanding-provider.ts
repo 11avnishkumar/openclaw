@@ -9,6 +9,12 @@ import type { CodexAppServerClient } from "./src/app-server/client.js";
 import { resolveCodexAppServerRuntimeOptions } from "./src/app-server/config.js";
 import { readModelListResult } from "./src/app-server/models.js";
 import {
+  assertCodexThreadStartResponse,
+  assertCodexTurnStartResponse,
+  readCodexErrorNotification,
+  readCodexTurnCompletedNotification,
+} from "./src/app-server/protocol-validators.js";
+import {
   isJsonObject,
   type CodexServerNotification,
   type CodexThreadItem,
@@ -17,12 +23,6 @@ import {
   type CodexTurnStartParams,
   type JsonObject,
 } from "./src/app-server/protocol.js";
-import {
-  assertCodexThreadStartResponse,
-  assertCodexTurnStartResponse,
-  readCodexErrorNotification,
-  readCodexTurnCompletedNotification,
-} from "./src/app-server/protocol-validators.js";
 import { createIsolatedCodexAppServerClient } from "./src/app-server/shared-client.js";
 
 const DEFAULT_CODEX_IMAGE_MODEL =
@@ -106,7 +106,7 @@ async function describeCodexImages(
           model,
           modelProvider: "openai",
           cwd: req.agentDir || process.cwd(),
-          approvalPolicy: "never",
+          approvalPolicy: "on-request",
           sandbox: "read-only",
           serviceName: "OpenClaw",
           developerInstructions:
@@ -135,7 +135,7 @@ async function describeCodexImages(
               })),
             ],
             cwd: req.agentDir || process.cwd(),
-            approvalPolicy: "never",
+            approvalPolicy: "on-request",
             model,
             effort: "low",
           } satisfies CodexTurnStartParams,
@@ -229,7 +229,8 @@ function createCodexImageTurnCollector(threadId: string) {
       return;
     }
     if (notification.method === "turn/completed") {
-      completedTurn = readCodexTurnCompletedNotification(notification.params)?.turn ?? completedTurn;
+      completedTurn =
+        readCodexTurnCompletedNotification(notification.params)?.turn ?? completedTurn;
       resolveCompletion?.();
       return;
     }

@@ -183,7 +183,7 @@ describe("codex media understanding provider", () => {
     expect(requests[1]?.params).toMatchObject({
       model: "gpt-5.4",
       modelProvider: "openai",
-      approvalPolicy: "never",
+      approvalPolicy: "on-request",
       sandbox: "read-only",
       dynamicTools: [],
       ephemeral: true,
@@ -191,7 +191,7 @@ describe("codex media understanding provider", () => {
     });
     expect(requests[2]?.params).toMatchObject({
       threadId: "thread-1",
-      approvalPolicy: "never",
+      approvalPolicy: "on-request",
       model: "gpt-5.4",
       input: [
         { type: "text", text: "Describe briefly.", text_elements: [] },
