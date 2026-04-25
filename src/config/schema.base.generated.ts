@@ -23125,6 +23125,19 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
           additionalProperties: false,
         },
       },
+      ssrfProxy: {
+        type: "object",
+        properties: {
+          enabled: {
+            type: "boolean",
+          },
+          proxyUrl: {
+            type: "string",
+            format: "uri",
+          },
+        },
+        additionalProperties: false,
+      },
     },
     required: ["commands"],
     additionalProperties: false,
